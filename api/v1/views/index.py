@@ -5,12 +5,7 @@ from flask import Flask, Blueprint, jsonify
 from models import storage
 
 
-
 @app_views.route('/status', strict_slashes=False)
 def Status():
     """Status"""
     return jsonify({"status": "OK"})
-
-
-if __name__ == "__main__":
-    pass
