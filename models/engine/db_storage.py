@@ -88,4 +88,3 @@ class DBStorage:
         A method to count the number of objects in storage:
         """
         return len(self.all(cls))
-        
