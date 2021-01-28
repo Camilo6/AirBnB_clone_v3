@@ -1,15 +1,14 @@
 #!/usr/bin/python3
-"""
-index view
-"""
+"""index.py to connect to API"""
 from api.v1.views import app_views
 from flask import Flask, Blueprint, jsonify
 from models import storage
 
 
+
 @app_views.route('/status', strict_slashes=False)
-def status():
-    """status"""
+def Status():
+    """Status"""
     return jsonify({"status": "OK"})
 
 
