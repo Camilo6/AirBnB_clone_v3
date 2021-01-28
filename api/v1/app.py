@@ -19,6 +19,7 @@ def teardown_appcontext(exception):
     """close the storage on teardown"""
     storage.close()
 
+
 @app.errorhandler(404)
 def not_found(error):
     """handler error 404"""
