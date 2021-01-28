@@ -19,7 +19,13 @@ def teardown_appcontext(exception):
     """close the storage on teardown"""
     storage.close()
 
+@app.errorhandler(404)
+def not_found(error):
+    """handler error 404"""
+    return jsonify({'error': 'Not found'}), 404
+
 
 if __name__ == "__main__":
     app.run(host=os.getenv('HBNB_API_HOST', '0.0.0.0'),
-            port=int(os.getenv('HBNB_API_PORT', '5000')))
+            port=os.getenv('HBNB_API_PORT', 5000),
+            debug=True)
