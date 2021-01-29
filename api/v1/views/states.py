@@ -54,3 +54,23 @@ def delete_state(state_id):
             return jsonify({}), 200
     else:
         abort(404)
+
+
+@app_views.route('/states/<state_id>', methods=['PUT'], strict_slashes=False)
+def update_state(state_id):
+    """ Updates a State object """
+    if not request.json:
+        return 'Not a json', 400
+    json_data = request.json
+
+    state = storage.get(State, state_id)
+    if not state:
+        abort(404)
+
+    ignored_keys = ['id', 'created_at', 'updated_at']
+    for key, value in json_data.items():
+        if key not in ignored_keys:
+            setattr(state, key, value)
+
+    storage.save()
+    return jsonify(state.to_dict()), 200
