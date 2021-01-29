@@ -68,3 +68,18 @@ def update_city(city_id):
 
     storage.save()
     return jsonify(city.to_dict()), 200
+
+
+@app_views.route('/cities/<city_id>', methods=['DELETE'],
+                 strict_slashes=False)
+def delete_city(city_id):
+    """ Deletes a City object """
+    cities = storage.all(City).values()
+    for city in cities:
+        if city.id == city_id:
+            print(city.id)
+            storage.delete(city)
+            storage.save()
+            return jsonify({}), 200
+    else:
+        abort(404)
