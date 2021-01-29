@@ -14,7 +14,8 @@ def list_all():
         users_dict.append(i.to_dict())
     return jsonify(users_dict)
 
-@app_views.route('/users/<user_id>', methods=['GET'],strict_slashes=False)
+
+@app_views.route('/users/<user_id>', methods=['GET'], strict_slashes=False)
 def get_user(user_id):
     """ Returns User object"""
     obj = storage.get(User, user_id)
@@ -22,6 +23,7 @@ def get_user(user_id):
         return jsonify(obj.to_dict())
     else:
         abort(404)
+
 
 @app_views.route('/users/<user_id>', methods=['DELETE'], strict_slashes=False)
 def delete_user(user_id):
@@ -33,6 +35,7 @@ def delete_user(user_id):
         return {}
     else:
         abort(404)
+
 
 @app_views.route('/users', methods=['POST'], strict_slashes=False)
 def create_user():
@@ -47,6 +50,7 @@ def create_user():
     new_user = User(**data)
     new_user.save()
     return jsonify(new_user.to_dict()), 201
+
 
 @app_views.route('/users/<user_id>', methods=['PUT'], strict_slashes=False)
 def update_user(user_id):
