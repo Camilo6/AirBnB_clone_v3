@@ -39,3 +39,18 @@ def create_state():
     new_state.save()
 
     return jsonify(new_state.to_dict()), 201
+
+
+@app_views.route('/states/<state_id>', methods=['DELETE'],
+                 strict_slashes=False)
+def delete_state(state_id):
+    """ Deletes a State object """
+    states = storage.all(State)
+    for state in states.values():
+        if state.id == state_id:
+            print(state.id)
+            storage.delete(state)
+            storage.save()
+            return jsonify({}), 200
+    else:
+        abort(404)
