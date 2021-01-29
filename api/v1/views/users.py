@@ -12,7 +12,7 @@ def list_all():
     users_dict = []
     for i in storage.all('User').values():
         users_dict.append(i.to_dict())
-        return jsonify(users_dict)
+    return jsonify(users_dict)
 
 
 @app_views.route('/users/<user_id>', methods=['GET'], strict_slashes=False)
@@ -41,12 +41,12 @@ def delete_user(user_id):
 def create_user():
     """ Creates User"""
     if not request.json:
-        return 'Not a JSON', 400
-    data = request.json
+        abort(400, {'Not a JSON'})
+    data = request.get_json
     if 'email' not in data:
-        return 'Missing email', 400
+        abort(400, {'Missing email'})
     if 'password' not in data:
-        return 'Missing password', 400
+        abort(400, {'Missing password'})
     new_user = User(**data)
     new_user.save()
     return jsonify(new_user.to_dict()), 201
