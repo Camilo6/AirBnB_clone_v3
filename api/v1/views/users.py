@@ -40,29 +40,28 @@ def delete_user(user_id):
 @app_views.route('/users', methods=['POST'], strict_slashes=False)
 def create_user():
     """ Creates User"""
-    data = request.get_json()
-    if not data:
-        abort(400, {'Not a JSON'})
-    elif 'email' not in data:
-        abort(400, {'Missing email'})
-    elif 'password' not in data:
-        abort(400, {'Missing password'})
-    else:
-        new_user = User(**data)
-        new_user.save()
-        return jsonify(new_user.to_dict()), 201
+    if not request.json:
+        return 'Not a JSON', 400
+    data = request.json
+    if 'email' not in data:
+        return 'Missing email', 400
+    if 'password' not in data:
+        return 'Missing password', 400
+    new_user = User(**data)
+    new_user.save()
+    return jsonify(new_user.to_dict()), 201
 
 
 @app_views.route('/users/<user_id>', methods=['PUT'], strict_slashes=False)
 def update_user(user_id):
     """ PUTs list of user objects """
-    if not request.get_json():
+    if not request.json():
         abort(400, {'Not a JSON'})
-        data = storage.get(User, user_id)
-        if data:
-            updt_data = request.get_json()
-            for i, j in updt_data.items():
-                setattr(data, i, j)
-            storage.save()
-            return jsonify(data.to_dict())
-        abort(404)
+    data = storage.get(User, user_id)
+    if data:
+        updt_data = request.get_json()
+        for i, j in updt_data.items():
+            setattr(data, i, j)
+        storage.save()
+        return jsonify(data.to_dict())
+    abort(404)
