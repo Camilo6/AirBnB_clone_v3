@@ -1,7 +1,5 @@
 #!/usr/bin/python3
-"""
-API file
-"""
+""" Starts a Flask web application """
 
 from flask import Flask, Blueprint, render_template, make_response, jsonify
 from models import storage
