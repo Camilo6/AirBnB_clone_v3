@@ -1,34 +1,34 @@
 #!/usr/bin/python3
-""" Starts a Flask web application """
-
-from flask import Flask, Blueprint, render_template, make_response, jsonify
-from models import storage
+"""
+Module app
+"""
 from api.v1.views import app_views
-from flask_cors import CORS
+from flasgger import Swagger
+from flask import (Blueprint, Flask, jsonify, make_response)
+from flask_cors import (CORS, cross_origin)
+from models import storage
 from os import getenv
 
+
 app = Flask(__name__)
+CORS(app, origins="0.0.0.0")
 app.register_blueprint(app_views)
-cors = CORS(app, resources={r"/*": {"origins": "0.0.0.0"}})
-
-
-@app.teardown_appcontext
-def teardown_appcontext(error):
-    """close the storage on teardown"""
-    storage.close()
+Swagger(app)
 
 
 @app.errorhandler(404)
 def not_found(error):
-    """handler error 404"""
-    return make_response(jsonify({'error': 'Not found'}), 404)
+    """json 404 page"""
+    return make_response(jsonify({"error": "Not found"}), 404)
+
+
+@app.teardown_appcontext
+def teardown(exception):
+    """ closes the session """
+    storage.close()
 
 
 if __name__ == "__main__":
-    host = getenv('HBNB_API_HOST')
-    port = getenv('HBNB_API_PORT')
-    if not host:
-        host = '0.0.0.0'
-    if not port:
-        port = 5000
-    app.run(host=host, port=port, threaded=True)
+    host = getenv("HBNB_API_HOST", "0.0.0.0")
+    port = getenv("HBNB_API_PORT", "5000")
+    app.run(host=host, port=port)
