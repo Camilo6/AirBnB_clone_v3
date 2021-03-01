@@ -90,4 +90,7 @@ class DBStorage:
         if cls:
             objs = self.all(cls).values()
             return len(objs)
-        return len(self.all())
+        else:
+            objs = self.all().values()
+            num = len(objs)
+        return num
