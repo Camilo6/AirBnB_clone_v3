@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """
-Index model holds the endpoint (route)
+Index model holds the endpoint  (route)
 """
 from api.v1.views import app_views, storage
 from flask import jsonify
