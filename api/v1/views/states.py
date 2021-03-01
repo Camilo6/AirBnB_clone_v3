@@ -1,74 +1,75 @@
 #!/usr/bin/python3
-""" handles all default RestFul API actions """
+"""
+State view
+"""
 from api.v1.views import app_views
-from models import storage
-from models.state import State
-from flask import jsonify, abort, request
+from flask import Flask, Blueprint, jsonify, abort, make_response, request
+from models import storage, state
 
 
-@app_views.route('/states', methods=['GET'], strict_slashes=False)
-def list_states():
-    """ Retrieves the list of all State objects """
-    all_states = [state.to_json() for state in storage.all("State").values()]
-    return jsonify(all_states)
-
-
-@app_views.route('/states/<state_id>', methods=['GET'], strict_slashes=False)
-def get_state(state_id):
-    """ Retrieves a State object """
-    if state_id is None:
-        abort(404)
-    state = storage.get("State", state_id)
-    if state is None:
-        abort(404)
-    return jsonify(state.to_json())
-
-
-@app_views.route('/states', methods=['POST'], strict_slashes=False)
-def create_state():
-    """ Creates a State """
-    r = None
-    try:
-        r = request.get_json()
-    except:
-        r = None
-    if r is None:
-        return "Not a JSON", 400
-    if 'name' not in r.keys():
-        return "Missing name", 400
-    s = State(**r)
-    s.save()
-    return jsonify(s.to_json()), 201
-
-
-@app_views.route('/states/<state_id>', methods=['DELETE'],
+@app_views.route('/states', methods=['GET'],
                  strict_slashes=False)
-def delete_state(state_id):
-    """ Deletes a State object """
-    if state_id is None:
-        abort(404)
-    state = storage.get("State", state_id)
-    if state is None:
-        abort(404)
-    storage.delete(state)
-    return jsonify({}), 200
+def states():
+    """states"""
+    states = []
+    my_states = storage.all('State').values()
+    for my_state in my_states:
+        states.append(my_state.to_dict())
+    return jsonify(states)
 
 
-@app_views.route('/states/<state_id>', methods=['PUT'], strict_slashes=False)
+@app_views.route('/states/<string:state_id>', methods=['GET'],
+                 strict_slashes=False)
+def state_id(state_id):
+    """Retrieves a State object"""
+    my_state = storage.get('State', state_id)
+    if my_state is None:
+        abort(404)
+    return jsonify(my_state.to_dict())
+
+
+@app_views.route('/states/<string:state_id>', methods=['DELETE'],
+                 strict_slashes=False)
+def state_id_delete(state_id):
+    """Deletes a State object"""
+    my_state = storage.get('State', state_id)
+    if my_state is None:
+        abort(404)
+    my_state.delete()
+    storage.save()
+    return jsonify({})
+
+
+@app_views.route('/states/', methods=['POST'],
+                 strict_slashes=False)
+def create_state():
+    """Creates a State object"""
+    if not request.json:
+        abort(400, 'Not a JSON')
+    if 'name' not in request.json:
+        abort(400, 'Missing name')
+    my_state = state.State(name=request.json.get('name', ""))
+    storage.new(my_state)
+    my_state.save()
+    return make_response(jsonify(my_state.to_dict()), 201)
+
+
+@app_views.route('/states/<string:state_id>', methods=['PUT'],
+                 strict_slashes=False)
 def update_state(state_id):
-    """ Updates a State object """
-    try:
-        r = request.get_json()
-    except:
-        r = None
-    if r is None:
-        return "Not a JSON", 400
-    state = storage.get("State", state_id)
-    if state is None:
+    """Updates a State object"""
+    my_state = storage.get('State', state_id)
+    if my_state is None:
         abort(404)
-    for k in ("id", "created_at", "updated_at"):
-        r.pop(k, None)
-    for k, v in r.items():
-        setattr(state, k, v)
-    state.save()
-    return jsonify(state.to_json()), 200
+    if not request.json:
+        # return make_response(jsonify({'error': 'Not a JSON'}), 400)
+        abort(400, 'Not a JSON')
+    for req in request.json:
+        if req not in ['id', 'created_at', 'updated_at']:
+            setattr(my_state, req, request.json[req])
+    my_state.save()
+    return jsonify(my_state.to_dict())
+
+
+if __name__ == "__main__":
+    pass
