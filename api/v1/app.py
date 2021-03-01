@@ -13,7 +13,7 @@ from os import getenv
 app = Flask(__name__)
 CORS(app, origins="0.0.0.0")
 app.register_blueprint(app_views)
-Swagger(app)
+cors = CORS(app, resources={r"/*": {"origins": "0.0.0.0"}})
 
 
 @app.errorhandler(404)
@@ -27,6 +27,7 @@ def teardown(exception):
     """ closes the session """
     storage.close()
 
+Swagger(app)
 
 if __name__ == "__main__":
     host = getenv("HBNB_API_HOST", "0.0.0.0")
